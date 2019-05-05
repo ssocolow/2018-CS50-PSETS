@@ -6,19 +6,40 @@ int mint(char e);
 
 int main(void)
 {
-    //make arrays to hold the digits
-    int cardnums[16];
-    int multdigits[16];
+    //make the notmultdigits array to hold the notmultdigits
     int notmultdigits[8];
 
-    //get the card number
-    string cardchars = get_string("Number:  ");
+    //clear notmultdigits of garbage values
+    for(int i = 0; i < 8; i++)
+    {
+        notmultdigits[i] = 0;
+    }
 
-    //get the length so we don't have to keep calling the strlen function during the for loop
+    //get the card number as a string
+    string cardchars = get_string("Enter credit card number to see if it passes a verification checksum (without hyphens or spaces):  ");
+
+    //get the length so we don't have to keep calling the strlen function during the for loops
     int number_of_cardchars = strlen(cardchars);
+
+    //make an array to hold the integer versions of the card chars
+    int cardnums[number_of_cardchars];
+
+    //store the result of number_of_cardchars * 2 so it doesn't need to be repeatedly called
+    int __d__ = number_of_cardchars * 2;
+
+    //make the multdigits array for the multiplied by 2 digits
+    //in the worst possible scenario, all the digits when multiplied by two would be greater than 10 and we need to store the digits (not the numbers themselves)
+    int multdigits[__d__];
+
+    //make each int in the multdigits array 0 so no garbage values
+    for(int i = 0; i < __d__; i++)
+    {
+        multdigits[i] = 0;
+    }
+
+    //copy the chars into ints and put it into the cardnums array
     for(int i = 0; i < number_of_cardchars; i++)
     {
-        //copy the chars into ints and put it into an array
         cardnums[i] = mint(cardchars[i]);
     }
 
@@ -36,16 +57,21 @@ int main(void)
     {
         result = "VISA";
     }
-    else
+    else if(number_of_cardchars == 16)
     {
         result = "MASTERCARD";
+    }
+    else
+    {
+        result = "Checksum passed, but credit card brand not recognized";
     }
 
     //multiplying the even numbers by two and storing their digits in the multdigits array
     //if the number has more than one digit, it's first digit is put into the i location in multdigits, then its second digit is put into the next spot.
-    for(int j = 0; int i = 0; i < number_of_cardchars; i += 2 && j++)
+    for(int i = number_of_cardchars - 2, j = 0; i >= 0; i -= 2 , j++)
     {
         int q = cardnums[i] * 2;
+        //printf("%i\n",q);
             if(q == 10)
             {
                 multdigits[j] = 1;
@@ -106,26 +132,37 @@ int main(void)
             }
     }
 
-    //putting the other numbers into the notmultdigits array
-    for(int i = 1; i <= number_of_cardchars; i += 2)
+    //testing
+    for(int i = 0; i < 15; i++)
     {
-        notmultdigits[i/2] = cardnums[i];
+        //printf("%i\n", multdigits[i]);
+    }
+
+    //putting the other numbers into the notmultdigits array
+    for(int i = number_of_cardchars - 1, j = 0; i >= 0; i -= 2 , j++)
+    {
+        notmultdigits[j] = cardnums[i];
+        //printf("%i\n", notmultdigits[j]);
     }
 
     //calculating the sum of the multdigits and the notmuldigits then checking if the modulus 10 is 0
     //if so, then print the result
     //if not then print INVALID
-    int sum;
-    for(int i = 0; i < 15; i++)
+    int sum = 0;
+
+    for(int i = 0; i < __d__; i++)
     {
         sum += multdigits[i];
     }
-    for(int i = 0; i < 7; i++)
+
+    for(int i = 0; i < 8; i++)
     {
         sum += notmultdigits[i];
     }
+    //printf("%i\n",sum);
 
-    if(sum % 10 = 0)
+
+    if(sum % 10 == 0)
     {
         printf("%s\n", result);
     }
